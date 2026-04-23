@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f2417">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PulveriMet">
+<title>PulveriMet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--vd:#0f2417;--vm:#1a3d26;--vc:#2d6a40;--vv:#4caf50;--am:#f5c518;--vr:#c0392b;--cl:#d6e4da;--br:#f0f4f1;--ts:#8aaa90}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--vd);color:var(--br);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+header{position:relative;z-index:10;padding:16px 16px 12px;border-bottom:1px solid #2d5235;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;line-height:1}
+.logo h1 span{color:var(--vv)}
+.logo p{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--ts);letter-spacing:2.5px;text-transform:uppercase}
+
+.hbtns{display:flex;gap:8px}
+.bgps, .bsel{border:none;padding:9px 14px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+.bgps{background:var(--vv);color:var(--vd)}
+.bsel{background:var(--vm);color:var(--cl);border:1px solid #3a6645}
+
+#ei{position:relative;z-index:10;text-align:center;padding:48px 22px}
+#ei .ico{font-size:3.8rem;margin-bottom:14px}
+#ei h2{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;margin-bottom:8px}
+#ei p{font-size:.82rem;color:var(--ts);line-height:1.6;max-width:280px;margin:0 auto 22px}
+.eibtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bei1{background:var(--vv);color:var(--vd);padding:13px 22px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;cursor:pointer;border:none}
+.bei2{background:var(--vm);border:1px solid #3a6645;color:var(--cl);padding:13px 22px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;cursor:pointer}
+
+#loading{position:relative;z-index:10;display:none;text-align:center;padding:50px 20px}
+.spin{width:38px;height:38px;border:3px solid #2d5235;border-top-color:var(--vv);border-radius:50%;animation:giro .8s linear infinite;margin:0 auto 14px}
+@keyframes giro{to{transform:rotate(360deg)}}
+
+#agora, #banner, #secoes { display: none; padding: 15px; }
+#banner.on { display: block; border-radius: 10px; margin: 10px; }
+#banner.IDEAL { background: #1b4d24; color: #a8e6b0; }
+#banner.ATENCAO { background: #4a360a; color: #f5d87a; }
+#banner.PROIBIDO { background: #4a0f0a; color: #f5a0a0; }
+
+#modal{display:none;position:fixed;inset:0;z-index:200;background:#000c;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+#modal.on{display:flex}
+.mbox{background:var(--vd);border:1px solid #3a6645;border-radius:22px 22px 0 0;width:100%;max-width:560px;padding:20px 18px 44px}
+#inp{width:100%; padding:12px; background:var(--vm); border:1px solid #3a6645; border-radius:8px; color:white; margin:10px 0}
+.sug{padding:10px; background:var(--vm); margin-bottom:5px; border-radius:8px; cursor:pointer}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><h1>Pulveri<span>Met</span></h1><p>Janelas de Pulverização</p></div>
+  <div class="hbtns">
+    <button class="bgps" onclick="usarGPS()">GPS</button>
+    <button class="bsel" onclick="abrirModal()">Busca</button>
+  </div>
+</header>
+
+<div id="ei">
+  <div class="ico">🌿</div>
+  <h2>Condições de Pulverização</h2>
+  <p>Verifique se as condições climáticas estão adequadas para aplicação.</p>
+  <div class="eibtns">
+    <button class="bei1" onclick="usarGPS()">📍 Localização Atual</button>
+    <button class="bei2" onclick="abrirModal()">🔍 Selecionar Local</button>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="spin"></div>
+  <p id="ltext">Consultando satélites...</p>
+</div>
+
+<div id="banner"></div>
+<div id="agora"></div>
+<div id="secoes">
+    <h3 style="margin: 15px 0; color: var(--vv); font-family: 'Bebas Neue'">Próximas 24 Horas</h3>
+    <div id="horas" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;"></div>
+</div>
+
+<div id="modal">
+  <div class="mbox">
+    <h3>📍 Selecionar Local</h3>
+    <input id="inp" type="text" placeholder="Digite o nome da cidade..." oninput="buscarSug()">
+    <div id="sugs"></div>
+    <button onclick="fecharModal()" style="width:100%; padding:10px; margin-top:10px; background:transparent; border:1px solid #3a6645; color:white; border-radius:8px">Cancelar</button>
+  </div>
+</div>
+
+<script>
+const g = id => document.getElementById(id);
+
+function abrirModal() { g('modal').classList.add('on'); }
+function fecharModal() { g('modal').classList.remove('on'); }
+
+function usarGPS() {
+    g('ei').style.display = 'none';
+    g('loading').style.display = 'block';
+    
+    if (!navigator.geolocation) {
+        alert("GPS não suportado neste navegador.");
+        resetApp();
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => carregarDados(pos.coords.latitude, pos.coords.longitude, "Sua Localização"),
+        (err) => {
+            alert("Erro ao obter GPS: " + err.message);
+            resetApp();
+        },
+        { timeout: 10000 }
+    );
+}
+
+function buscarSug() {
+    const q = g('inp').value;
+    if (q.length < 3) return;
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=5&language=pt&format=json`)
+        .then(r => r.json())
+        .then(d => {
+            let html = '';
+            if (d.results) {
+                d.results.forEach(loc => {
+                    html += `<div class="sug" onclick="carregarDados(${loc.latitude}, ${loc.longitude}, '${loc.name}')">${loc.name}, ${loc.admin1 || ''}</div>`;
+                });
+            }
+            g('sugs').innerHTML = html;
+        });
+}
+
+function carregarDados(lat, lon, nome) {
+    fecharModal();
+    g('ei').style.display = 'none';
+    g('loading').style.display = 'block';
+    g('ltext').innerText = "Carregando clima...";
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,precipitation&current_weather=true&timezone=auto`;
+
+    fetch(url)
+        .then(r => r.json())
+        .then(d => {
+            g('loading').style.display = 'none';
+            renderizar(d, nome);
+        })
+        .catch(e => {
+            alert("Erro na API: " + e.message);
+            resetApp();
+        });
+}
+
+function avaliar(t, u, v, p) {
+    if (t > 35 || u < 40 || v > 20 || p > 0.1) return 'PROIBIDO';
+    if (t > 30 || t < 10 || u < 55 || v > 10 || v < 1) return 'ATENCAO';
+    return 'IDEAL';
+}
+
+function renderizar(d, nome) {
+    const cw = d.current_weather;
+    const h = d.hourly;
+    const status = avaliar(cw.temperature, h.relativehumidity_2m[0], cw.windspeed, h.precipitation[0]);
+
+    const ban = g('banner');
+    ban.className = 'on ' + status;
+    ban.innerHTML = `<strong>${status}</strong> para pulverizar em ${nome}`;
+
+    g('agora').style.display = 'block';
+    g('agora').innerHTML = `
+        <div style="background:var(--vm); padding:20px; border-radius:15px; border:1px solid #2d5235">
+            <h2 style="font-family:'Bebas Neue'">${Math.round(cw.temperature)}°C</h2>
+            <p>Umidade: ${h.relativehumidity_2m[0]}% | Vento: ${cw.windspeed}km/h</p>
+        </div>
+    `;
+
+    let hhtml = '';
+    for(let i=0; i<24; i++) {
+        let st = avaliar(h.temperature_2m[i], h.relativehumidity_2m[i], h.windspeed_10m[i], h.precipitation[i]);
+        hhtml += `<div style="min-width:80px; background:var(--vm); padding:10px; border-radius:10px; text-align:center; border:1px solid ${st==='IDEAL'?'var(--vv)':st==='ATENCAO'?'var(--am)':'var(--vr)'}">
+            <small>${i}h</small><br><strong>${Math.round(h.temperature_2m[i])}°</strong><br><small>${st}</small>
+        </div>`;
+    }
+    g('horas').innerHTML = hhtml;
+    g('secoes').style.display = 'block';
+}
+
+function resetApp() {
+    g('loading').style.display = 'none';
+    g('ei').style.display = 'block';
+}
+</script>
+</body>
+</html>
