@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f2417">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PulveriMet">
+<title>PulveriMet</title>
+
+<script>
+(function(){
+  const m={name:"PulveriMet – Pulverização",short_name:"PulveriMet",description:"Janelas de pulverização agrícola",start_url:".",display:"standalone",background_color:"#0f2417",theme_color:"#0f2417",orientation:"portrait",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230f2417'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"},{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f2417'/%3E%3Ctext x='256' y='340' font-size='300' text-anchor='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml"}]};
+  const b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);
+  document.currentScript.parentNode.appendChild(l);
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{--vd:#0f2417;--vm:#1a3d26;--vc:#2d6a40;--vv:#4caf50;--am:#f5c518;--vr:#c0392b;--cl:#d6e4da;--br:#f0f4f1;--ts:#8aaa90}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--vd);color:var(--br);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 0%,#1e4d2b44 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 90% 100%,#0d3a1a33 0%,transparent 60%);pointer-events:none;z-index:0}
+
+header{position:relative;z-index:10;padding:16px 16px 12px;border-bottom:1px solid #2d5235;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;line-height:1}
+.logo h1 span{color:var(--vv)}
+.logo p{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--ts);letter-spacing:2.5px;text-transform:uppercase;margin-top:1px}
+.hbtns{display:flex;gap:8px;flex-shrink:0}
+.bgps{background:var(--vv);border:none;color:var(--vd);padding:9px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap}
+.bgps:active{transform:scale(.95)}
+.bsel{background:var(--vm);border:1px solid #3a6645;color:var(--cl);padding:9px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap}
+.bsel:active{transform:scale(.95)}
+
+/* MODAL */
+#modal{display:none;position:fixed;inset:0;z-index:200;background:#000b;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+#modal.on{display:flex}
+.mbox{background:var(--vd);border:1px solid #3a6645;border-radius:22px 22px 0 0;width:100%;max-width:560px;padding:20px 18px 44px;animation:sup .28s ease}
+@keyframes sup{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhandle{width:38px;height:4px;background:#3a6645;border-radius:2px;margin:0 auto 18px}
+.mt{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;margin-bottom:4px}
+.ms{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ts);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.ogps{background:#1a3d2688;border:1px solid var(--vv);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:14px;-webkit-tap-highlight-color:transparent}
+.ogps:active{background:#1e5c2c88}
+.ogico{width:42px;height:42px;background:var(--vv);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.ogtxt h4{font-size:.88rem;font-weight:600;margin-bottom:2px}
+.ogtxt p{font-size:.68rem;color:var(--ts);font-family:'DM Mono',monospace}
+.ou{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.oul{flex:1;height:1px;background:#2d5235}
+.ou span{font-size:.62rem;color:var(--ts);font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;white-space:nowrap}
+.bwrap{display:flex;gap:8px;margin-bottom:10px}
+#inp{flex:1;background:var(--vm);border:1px solid #3a6645;border-radius:10px;padding:12px 14px;color:var(--br);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;-webkit-appearance:none;transition:border-color .2s}
+#inp::placeholder{color:#4a7a52}
+#inp:focus{border-color:var(--vv)}
+.bbuscar{background:var(--vv);border:none;color:var(--vd);padding:12px 16px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;cursor:pointer;white-space:nowrap}
+.bbuscar:active{transform:scale(.95)}
+#sugs{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.sug{background:var(--vm);border:1px solid #2d5235;border-radius:9px;padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;-webkit-tap-highlight-color:transparent}
+.sug:active{background:#1e4530}
+.sn{font-size:.85rem;font-weight:600}
+.se{font-size:.66rem;color:var(--ts);font-family:'DM Mono',monospace;margin-top:1px}
+.bcancel{display:block;width:100%;margin-top:14px;background:transparent;border:1px solid #2d5235;color:var(--ts);padding:11px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer}
+
+/* LOADING */
+#loading{position:relative;z-index:10;text-align:center;padding:60px 20px;display:none}
+.spin{width:38px;height:38px;border:3px solid #2d5235;border-top-color:var(--vv);border-radius:50%;animation:giro .8s linear infinite;margin:0 auto 16px}
+@keyframes giro{to{transform:rotate(360deg)}}
+#loading p{font-size:.8rem;color:var(--ts);font-family:'DM Mono',monospace;letter-spacing:1px}
+#lsub{display:block;font-size:.65rem;color:#4a7a52;margin-top:5px}
+
+/* ERRO */
+#erro{position:relative;z-index:10;margin:16px 16px 0;background:#2a0f0f;border:1px solid var(--vr);border-radius:10px;padding:14px 16px;font-size:.82rem;color:#f5a0a0;display:none;line-height:1.6}
+#erro button{margin-top:10px;background:transparent;border:1px solid var(--vr);color:#f5a0a0;padding:7px 14px;border-radius:8px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* INICIAL */
+#ei{position:relative;z-index:10;text-align:center;padding:48px 22px}
+#ei .ico{font-size:3.8rem;margin-bottom:14px}
+#ei h2{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;margin-bottom:8px}
+#ei p{font-size:.82rem;color:var(--ts);line-height:1.6;max-width:280px;margin:0 auto 22px}
+.eibtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bei1{background:var(--vv);border:none;color:var(--vd);padding:13px 22px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.bei1:active{transform:scale(.95)}
+.bei2{background:var(--vm);border:1px solid #3a6645;color:var(--cl);padding:13px 22px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.bei2:active{transform:scale(.95)}
+
+/* BANNER */
+#banner{position:relative;z-index:10;margin:14px 16px 0;padding:11px 14px;border-radius:10px;font-size:.82rem;font-weight:600;display:flex;flex-direction:column;gap:3px;opacity:0;transform:translateY(-5px);transition:all .4s}
+#banner.on{opacity:1;transform:translateY(0)}
+#banner.IDEAL{background:#1b4d2488;border:1px solid var(--vv);color:#a8e6b0}
+#banner.ATENCAO{background:#4a360a88;border:1px solid var(--am);color:#f5d87a}
+#banner.PROIBIDO{background:#4a0f0a88;border:1px solid var(--vr);color:#f5a0a0}
+.bsub{font-weight:300;font-size:.73rem}
+
+/* AGORA */
+#agora{position:relative;z-index:10;margin:14px 16px 0;background:var(--vm);border:1px solid #2d5235;border-radius:14px;padding:16px;display:none;animation:fu .4s ease}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.atop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.alocal{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--ts);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
+.atemp{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;color:var(--br)}
+.atemp span{font-size:1.6rem;color:var(--ts)}
+.acond{font-size:.8rem;color:var(--cl);margin-top:1px}
+.aico{font-size:3rem;line-height:1}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.mc{background:#0f241788;border:1px solid #2d5235;border-radius:10px;padding:10px;text-align:center}
+.ml{font-size:.57rem;color:var(--ts);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+.mv{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500}
+.mv.ok{color:var(--vv)}.mv.w{color:var(--am)}.mv.b{color:var(--vr)}
+.idx{margin-top:12px;padding-top:12px;border-top:1px solid #2d5235;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.idxl{font-size:.7rem;color:var(--ts);text-transform:uppercase;letter-spacing:1px}
+.idxp{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--ts);margin-top:1px}
+.barra{flex:1;height:6px;background:#1a3d26;border-radius:3px;overflow:hidden}
+.bf{height:100%;border-radius:3px;transition:width .8s ease}
+.ibadge{font-family:'Bebas Neue',sans-serif;font-size:.95rem;padding:5px 13px;border-radius:30px;letter-spacing:1px;white-space:nowrap}
+.ibadge.IDEAL{background:#1e5c2c;color:#a8e6b0;border:1px solid var(--vv)}
+.ibadge.ATENCAO{background:#4a360a;color:#f5d87a;border:1px solid var(--am)}
+.ibadge.PROIBIDO{background:#4a0f0a;color:#f5a0a0;border:1px solid var(--vr)}
+
+/* SEÇÕES */
+.sect{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;color:var(--vv);margin:18px 16px 9px;position:relative;z-index:10}
+#horas{display:flex;gap:9px;overflow-x:auto;padding:0 16px 8px;scrollbar-width:none;position:relative;z-index:10}
+#horas::-webkit-scrollbar{display:none}
+.ch{min-width:74px;background:var(--vm);border:1px solid #2d5235;border-radius:12px;padding:11px 7px;text-align:center;flex-shrink:0;animation:fu .4s ease}
+.ch.IDEAL{border-color:var(--vv);box-shadow:0 0 8px #4caf5030}
+.ch.ATENCAO{border-color:var(--am);box-shadow:0 0 8px #f5c51830}
+.ch.PROIBIDO{border-color:var(--vr);box-shadow:0 0 8px #c0392b20}
+.chh{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--ts);margin-bottom:5px}
+.chi{font-size:1.3rem;margin-bottom:3px}
+.cht{font-family:'DM Mono',monospace;font-size:.84rem;color:var(--br);margin-bottom:4px}
+.chd{font-size:.53rem;color:var(--ts);font-family:'DM Mono',monospace;margin-bottom:5px}
+.hb{font-size:.5rem;padding:2px 5px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.hb.IDEAL{background:#1e5c2c;color:#a8e6b0}
+.hb.ATENCAO{background:#4a360a;color:#f5d87a}
+.hb.PROIBIDO{background:#4a0f0a;color:#f5a0a0}
+#dias{position:relative;z-index:10;margin:0 16px;display:flex;flex-direction:column;gap:7px}
+.cd{background:var(--vm);border:1px solid #2d5235;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:72px 28px 1fr auto;align-items:center;gap:10px;animation:fu .4s ease}
+.cd.IDEAL{border-color:#3a8a4455}
+.cd.ATENCAO{border-color:#7a5a1055}
+.cd.PROIBIDO{border-color:#7a201855}
+.cdn{font-size:.78rem;font-weight:600;color:var(--br)}
+.cdd{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ts)}
+.cdi{font-size:1.3rem;text-align:center}
+.cddet{display:flex;flex-direction:column;gap:2px}
+.cdr{font-size:.63rem;color:var(--ts);display:flex;gap:5px}
+.cdr b{color:var(--cl);font-weight:500}
+.db{font-family:'Bebas Neue',sans-serif;font-size:.75rem;padding:4px 9px;border-radius:20px;letter-spacing:1px;white-space:nowrap}
+.db.IDEAL{background:#1e5c2c;color:#a8e6b0;border:1px solid var(--vv)}
+.db.ATENCAO{background:#4a360a;color:#f5d87a;border:1px solid var(--am)}
+.db.PROIBIDO{background:#4a0f0a;color:#f5a0a0;border:1px solid var(--vr)}
+
+.leg{display:flex;gap:12px;margin:16px 16px 0;position:relative;z-index:10;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--ts);font-family:'DM Mono',monospace}
+.ld{width:7px;height:7px;border-radius:50%}
+.ld.IDEAL{background:var(--vv)}.ld.ATENCAO{background:var(--am)}.ld.PROIBIDO{background:var(--vr)}
+
+.crit{position:relative;z-index:10;margin:16px 16px 0;background:var(--vm);border:1px solid #2d5235;border-radius:14px;padding:14px}
+.crit h3{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:2px;color:var(--vv);margin-bottom:10px}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #2d5235;font-size:.73rem}
+.cr:last-child{border-bottom:none}
+.crn{color:var(--ts)}
+.crv{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--cl);text-align:right}
+
+footer{position:relative;z-index:10;text-align:center;padding:20px 16px 36px;font-family:'DM Mono',monospace;font-size:.57rem;color:#3a6645;letter-spacing:1px;text-transform:uppercase;line-height:1.8}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <h1>Pulveri<span>Met</span></h1>
+    <p>Janelas de Pulverização</p>
+  </div>
+  <div class="hbtns">
+    <button class="bgps" onclick="usarGPS()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      GPS
+    </button>
+    <button class="bsel" onclick="abrirModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Selecionar
+    </button>
+  </div>
+</header>
+
+<!-- MODAL -->
+<div id="modal" onclick="if(event.target===this)fecharModal()">
+  <div class="mbox">
+    <div class="mhandle"></div>
+    <div class="mt">📍 Selecionar Local</div>
+    <div class="ms">Localização para consulta</div>
+
+    <div class="ogps" onclick="fecharModalGPS()">
+      <div class="ogico">🛰️</div>
+      <div class="ogtxt">
+        <h4>Usar Localização Atual</h4>
+        <p>GPS automático do dispositivo</p>
+      </div>
+    </div>
+
+    <div class="ou">
+      <div class="oul"></div>
+      <span>ou buscar cidade</span>
+      <div class="oul"></div>
+    </div>
+
+    <div class="bwrap">
+      <input id="inp" type="search" placeholder="Ex: Balsas, Sorriso, Chapadão..." autocomplete="off"
+        oninput="debounce()" onkeydown="if(event.key==='Enter'){event.preventDefault();buscarSug()}">
+      <button class="bbuscar" onclick="buscarSug()">Buscar</button>
+    </div>
+
+    <div id="sugs"></div>
+    <button class="bcancel" onclick="fecharModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ESTADO INICIAL -->
+<div id="ei">
+  <div class="ico">🌿</div>
+  <h2>Condições de Pulverização</h2>
+  <p>Verifique se as condições climáticas estão adequadas para aplicação de defensivos agrícolas.</p>
+  <div class="eibtns">
+    <button class="bei1" onclick="usarGPS()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      Localização Atual
+    </button>
+    <button class="bei2" onclick="abrirModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Selecionar Local
+    </button>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="spin"></div>
+  <p>Obtendo dados meteorológicos...</p>
+  <small id="lsub"></small>
+</div>
+
+<div id="erro"></div>
+<div id="banner"></div>
+<div id="agora"></div>
+
+<div id="secoes" style="display:none">
+  <div class="leg">
+    <div class="li"><div class="ld IDEAL"></div> IDEAL</div>
+    <div class="li"><div class="ld ATENCAO"></div> ATENÇÃO</div>
+    <div class="li"><div class="ld PROIBIDO"></div> PROIBIDO</div>
+  </div>
+  <div class="sect">↓ Próximas 24 Horas</div>
+  <div id="horas"></div>
+  <div class="sect" style="margin-top:14px">↓ Próximos 7 Dias</div>
+  <div id="dias"></div>
+</div>
+
+<div class="crit" id="crit" style="display:none">
+  <h3>📋 Critérios Técnicos MAPA</h3>
+  <div class="cr"><span class="crn">🌡️ Temperatura</span><span class="crv">Ideal 10–30°C · Proibido &gt;35°C</span></div>
+  <div class="cr"><span class="crn">💧 Umidade Relativa</span><span class="crv">Ideal 55–90% · Proibido &lt;40%</span></div>
+  <div class="cr"><span class="crn">💨 Vento</span><span class="crv">Ideal 1–10 km/h · Proibido &gt;20 km/h</span></div>
+  <div class="cr"><span class="crn">🌧️ Precipitação</span><span class="crv">Proibido se chuva prevista</span></div>
+  <div class="cr"><span class="crn">🌙 Inversão Térmica</span><span class="crv">Atenção 20h–6h c/ vento &lt;2 km/h</span></div>
+</div>
+
+<footer>
+  PulveriMet · João Divino Barbosa – Eng. Agronômica de Precisão<br>
+  Open-Meteo · Sem chave API · v2.0
+</footer>
+
+<script>
+const WI={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+const WD={0:'Céu Limpo',1:'Principalmente Limpo',2:'Parcialmente Nublado',3:'Nublado',45:'Névoa',48:'Névoa c/ Gelo',51:'Garoa Leve',53:'Garoa Moderada',55:'Garoa Intensa',61:'Chuva Leve',63:'Chuva Moderada',65:'Chuva Forte',71:'Neve Leve',73:'Neve Moderada',75:'Neve Forte',80:'Pancadas Leves',81:'Pancadas Moderadas',82:'Pancadas Fortes',95:'Trovoada',96:'Trovoada c/ Granizo',99:'Trovoada Forte'};
+
+function avaliar(temp,umid,vento,chuva,hora){
+  const p=[];let n='IDEAL';
+  if(temp>35){n='PROIBIDO';p.push('Temp. alta ('+temp+'°C)')}
+  else if(temp>30){if(n!=='PROIBIDO')n='ATENCAO';p.push('Temp. elevada ('+temp+'°C)')}
+  else if(temp<10){if(n!=='PROIBIDO')n='ATENCAO';p.push('Temp. baixa ('+temp+'°C)')}
+  if(umid<40){n='PROIBIDO';p.push('UR muito baixa ('+umid+'%)')}
+  else if(umid<55){if(n!=='PROIBIDO')n='ATENCAO';p.push('UR baixa ('+umid+'%)')}
+  else if(umid>90){if(n!=='PROIBIDO')n='ATENCAO';p.push('UR alta ('+umid+'%)')}
+  if(vento>20){n='PROIBIDO';p.push('Vento forte ('+vento+'km/h)')}
+  else if(vento>10){if(n!=='PROIBIDO')n='ATENCAO';p.push('Vento alto ('+vento+'km/h)')}
+  else if(vento<1){if(n!=='PROIBIDO')n='ATENCAO';p.push('Vento fraco (deriva)')}
+  if(chuva>0.1){n='PROIBIDO';p.push('Chuva prevista')}
+  if(hora!==undefined){const h=new Date(hora).getHours();if((h>=20||h<=6)&&vento<2){if(n==='IDEAL')n='ATENCAO';p.push('Inversão térmica')}}
+  return{n,p};
+}
+
+function calcScore(temp,umid,vento){
+  let s=100;
+  if(temp>30)s-=Math.min(40,(temp-30)*4);
+  if(temp<10)s-=Math.min(30,(10-temp)*3);
+  if(umid<55)s-=Math.min(40,(55-umid)*1.5);
+  if(umid>90)s-=Math.min(20,(umid-90)*1.5);
+  if(vento>10)s-=Math.min(40,(vento-10)*3);
+  if(vento<1)s-=15;
+  return Math.max(0,Math.min(100,Math.round(s)));
+}
+
+function scoreCor(s){return s>=70?'#4caf50':s>=40?'#f5c518':'#c0392b'}
+function bl(n){return n==='ATENCAO'?'ATENÇÃO':n}
+function g(id){return document.getElementById(id)}
+
+var LAT=null,LON=null,NOME='',debT=null;
+
+function loading(sim,sub){
+  g('loading').style.display=sim?'block':'none';
+  if(sub!==undefined)g('lsub').textContent=sub;
+}
+
+function erroMsg(msg){
+  loading(false);
+  var e=g('erro');
+  e.style.display='block';
+  e.innerHTML='⚠️ '+msg+'<br><button onclick="abrirModal()">🔍 Buscar cidade</button>';
+  g('ei').style.display='block';
+}
+
+// MODAL
+function abrirModal(){
+  g('modal').classList.add('on');
+  g('sugs').innerHTML='';
+  g('inp').value='';
+  setTimeout(function(){g('inp').focus()},320);
+}
+function fecharModal(){g('modal').classList.remove('on')}
+function fecharModalGPS(){fecharModal();usarGPS()}
+
+// GPS
+function usarGPS(){
+  g('ei').style.display='none';
+  g('erro').style.display='none';
+  loading(true,'Aguardando GPS...');
+
+  if(!navigator.geolocation){
+    erroMsg('Geolocalização não disponível. Use "Selecionar" para buscar sua cidade.');
+    return;
+  }
+
+  var timer=setTimeout(function(){
+    loading(false);
+    erroMsg('GPS não respondeu. Use "Selecionar" para buscar sua cidade.');
+  },7000);
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      clearTimeout(timer);
+      LAT=pos.coords.latitude.toFixed(4);
+      LON=pos.coords.longitude.toFixed(4);
+      loading(true,'Identificando local...');
+      resolverNome(LAT,LON).then(function(){carregarDados()});
+    },
+    function(err){
+      clearTimeout(timer);
+      loading(false);
+      var msgs={1:'GPS negado pelo usuário.',2:'GPS indisponível.',3:'GPS expirou.'};
+      erroMsg((msgs[err.code]||'Erro de GPS.')+' Use "Selecionar" para buscar sua cidade.');
+    },
+    {timeout:6000,maximumAge:120000,enableHighAccuracy:false}
+  );
+}
+
+// DEBOUNCE BUSCA
+function debounce(){
+  clearTimeout(debT);
+  var v=g('inp').value.trim();
+  if(v.length<2){g('sugs').innerHTML='';return}
+  debT=setTimeout(buscarSug,400);
+}
+
+async function buscarSug(){
+  var q=g('inp').value.trim();
+  if(!q)return;
+  var ls=g('sugs');
+  ls.innerHTML='<div style="font-size:.72rem;color:var(--ts);padding:8px;font-family:\'DM Mono\',monospace">Buscando...</div>';
+  try{
+    var r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=pt&format=json');
+    var d=await r.json();
+    ls.innerHTML='';
+    if(!d.results||!d.results.length){
+      ls.innerHTML='<div style="font-size:.72rem;color:var(--ts);padding:8px;font-family:\'DM Mono\',monospace">Nenhum resultado para "'+q+'"</div>';
+      return;
+    }
+    d.results.forEach(function(it){
+      var div=document.createElement('div');
+      div.className='sug';
+      var est=it.admin1?', '+it.admin1:'';
+      var pais=it.country_code!=='BR'?' · '+it.country:'';
+      div.innerHTML='<div><div class="sn">'+it.name+est+'</div><div class="se">'+it.latitude.toFixed(2)+', '+it.longitude.toFixed(2)+pais+'</div></div><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4a7a52" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+      div.onclick=function(){selecionarLocal(it)};
+      ls.appendChild(div);
+    });
+  }catch(e){
+    ls.innerHTML='<div style="font-size:.72rem;color:#f5a0a0;padding:8px">Erro na busca. Verifique conexão.</div>';
+  }
+}
+
+function selecionarLocal(it){
+  fecharModal();
+  LAT=it.latitude.toFixed(4);
+  LON=it.longitude.toFixed(4);
+  NOME=it.name+(it.admin1?', '+it.admin1:'');
+  g('ei').style.display='none';
+  g('erro').style.display='none';
+  loading(true,'Carregando previsão...');
+  carregarDados();
+}
+
+async function resolverNome(la,lo){
+  try{
+    var r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+la+'&lon='+lo+'&format=json&accept-language=pt');
+    var d=await r.json();
+    NOME=(d.address&&(d.address.city||d.address.town||d.address.village||d.address.municipality)||'Local')+(d.address&&d.address.state?', '+d.address.state:'');
+  }catch(e){NOME=la+', '+lo}
+}
+
+async function carregarDados(){
+  loading(true,'Carregando previsão...');
+  try{
+    var url='https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,precipitation,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_sum,relativehumidity_2m_max,relativehumidity_2m_min&current_weather=true&timezone=America%2FSao_Paulo&forecast_days=7';
+    var r=await fetch(url);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    var d=await r.json();
+    loading(false);
+    renderizar(d);
+  }catch(e){
+    erroMsg('Falha ao carregar dados: '+e.message);
+  }
+}
+
+function renderizar(d){
+  var cw=d.current_weather,h=d.hourly,day=d.daily;
+  var agora=new Date();
+  var idx=h.time.findIndex(function(t){
+    var td=new Date(t);
+    return td.getFullYear()===agora.getFullYear()&&td.getMonth()===agora.getMonth()&&
+           td.getDate()===agora.getDate()&&td.getHours()===agora.getHours();
+  });
+  if(idx<0)idx=0;
+
+  var temp=Math.round(h.temperature_2m[idx]);
+  var umid=Math.round(h.relativehumidity_2m[idx]);
+  var vento=Math.round(cw.windspeed);
+  var chuva=h.precipitation[idx]||0;
+  var wcode=h.weathercode[idx]!=null?h.weathercode[idx]:cw.weathercode;
+  var av=avaliar(temp,umid,vento,chuva,h.time[idx]);
+  var sc=calcScore(temp,umid,vento);
+
+  // Banner
+  var ban=g('banner');
+  var bmsg={IDEAL:'✅ IDEAL para pulverização agora',ATENCAO:'⚠️ Condições com RESTRIÇÕES',PROIBIDO:'🚫 PROIBIDO pulverizar agora'};
+  ban.className='on '+av.n;
+  ban.innerHTML=bmsg[av.n]+(av.p.length?'<div class="bsub">'+av.p.slice(0,2).join(' · ')+'</div>':'');
+
+  // Painel agora
+  var pa=g('agora');pa.style.display='block';
+  var tc=temp>35?'b':temp>30?'w':temp<10?'w':'ok';
+  var uc=umid<40?'b':umid<55?'w':umid>90?'w':'ok';
+  var vc=vento>20?'b':vento>10?'w':vento<1?'w':'ok';
+  var cc=chuva>0.1?'b':'ok';
+  pa.innerHTML=
+    '<div class="atop">'+
+      '<div>'+
+        '<div class="alocal">📍 '+NOME+'</div>'+
+        '<div class="atemp">'+temp+'<span>°C</span></div>'+
+        '<div class="acond">'+(WD[wcode]||'Variável')+'</div>'+
+      '</div>'+
+      '<div class="aico">'+(WI[wcode]||'🌤️')+'</div>'+
+    '</div>'+
+    '<div class="g3">'+
+      '<div class="mc"><span class="ml">💧 Umidade</span><div class="mv '+uc+'">'+umid+'%</div></div>'+
+      '<div class="mc"><span class="ml">💨 Vento</span><div class="mv '+vc+'">'+vento+'km/h</div></div>'+
+      '<div class="mc"><span class="ml">🌧️ Chuva</span><div class="mv '+cc+'">'+chuva.toFixed(1)+'mm</div></div>'+
+    '</div>'+
+    '<div class="idx">'+
+      '<div><div class="idxl">Índice Pulverização</div><div class="idxp">'+sc+'/100 pts</div></div>'+
+      '<div class="barra"><div class="bf" style="width:'+sc+'%;background:'+scoreCor(sc)+'"></div></div>'+
+      '<div class="ibadge '+av.n+'">'+bl(av.n)+'</div>'+
+    '</div>';
+
+  // Horas
+  var lh=g('horas');lh.innerHTML='';
+  for(var i=idx;i<idx+24&&i<h.time.length;i++){
+    var t=new Date(h.time[i]);
+    var tt=Math.round(h.temperature_2m[i]);
+    var tu=Math.round(h.relativehumidity_2m[i]);
+    var tv=Math.round(h.windspeed_10m[i]);
+    var tc2=h.precipitation[i]||0;
+    var tw=h.weathercode[i];
+    var nh=avaliar(tt,tu,tv,tc2,h.time[i]).n;
+    var c=document.createElement('div');
+    c.className='ch '+nh;
+    c.innerHTML='<div class="chh">'+t.getHours().toString().padStart(2,'0')+'h</div>'+
+      '<div class="chi">'+(WI[tw]||'🌤️')+'</div>'+
+      '<div class="cht">'+tt+'°C</div>'+
+      '<div class="chd">'+tu+'%·'+tv+'km/h</div>'+
+      '<div class="hb '+nh+'">'+bl(nh)+'</div>';
+    lh.appendChild(c);
+  }
+
+  // Dias
+  var ld=g('dias');ld.innerHTML='';
+  var DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  for(var j=0;j<day.time.length;j++){
+    var dd=new Date(day.time[j]+'T12:00:00');
+    var tmax=Math.round(day.temperature_2m_max[j]);
+    var tmin=Math.round(day.temperature_2m_min[j]);
+    var umax=day.relativehumidity_2m_max?Math.round(day.relativehumidity_2m_max[j]):70;
+    var umin=day.relativehumidity_2m_min?Math.round(day.relativehumidity_2m_min[j]):50;
+    var wmax=Math.round(day.windspeed_10m_max[j]);
+    var prec=day.precipitation_sum[j]||0;
+    var dw=day.weathercode[j];
+    var nd=avaliar(tmax,umin,wmax,prec).n;
+    var data=dd.getDate().toString().padStart(2,'0')+'/'+(dd.getMonth()+1).toString().padStart(2,'0');
+    var nome=j===0?'Hoje':j===1?'Amanhã':DS[dd.getDay()];
+    var c2=document.createElement('div');
+    c2.className='cd '+nd;
+    c2.innerHTML=
+      '<div><div class="cdn">'+nome+'</div><div class="cdd">'+data+'</div></div>'+
+      '<div class="cdi">'+(WI[dw]||'🌤️')+'</div>'+
+      '<div class="cddet">'+
+        '<div class="cdr"><b>🌡️</b>'+tmin+'–'+tmax+'°C</div>'+
+        '<div class="cdr"><b>💧</b>'+umin+'–'+umax+'% <b>💨</b>'+wmax+'km/h <b>☔</b>'+prec.toFixed(1)+'mm</div>'+
+      '</div>'+
+      '<div class="db '+nd+'">'+bl(nd)+'</div>';
+    ld.appendChild(c2);
+  }
+
+  g('secoes').style.display='block';
+  g('crit').style.display='block';
+}
+</script>
+</body>
+</html>
