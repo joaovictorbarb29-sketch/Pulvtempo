@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f2417">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PulveriMet">
+<title>PulveriMet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--vd:#0f2417;--vm:#1a3d26;--vc:#2d6a40;--vv:#4caf50;--am:#f5c518;--vr:#c0392b;--cl:#d6e4da;--br:#f0f4f1;--ts:#8aaa90}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--vd);color:var(--br);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+header{position:relative;z-index:10;padding:16px;border-bottom:1px solid #2d5235;display:flex;align-items:center;justify-content:space-between}
+.logo h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;line-height:1}
+.logo h1 span{color:var(--vv)}
+.logo p{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--ts);letter-spacing:2.5px;text-transform:uppercase}
+.hbtns{display:flex;gap:8px}
+.bgps, .bsel{border:none;padding:9px 12px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+.bgps{background:var(--vv);color:var(--vd)}
+.bsel{background:var(--vm);color:var(--cl);border:1px solid #3a6645}
+
+#modal{display:none;position:fixed;inset:0;z-index:200;background:#000c;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+#modal.on{display:flex}
+.mbox{background:var(--vd);border-radius:22px 22px 0 0;width:100%;max-width:560px;padding:20px 18px 44px;border:1px solid #3a6645}
+.mhandle{width:38px;height:4px;background:#3a6645;border-radius:2px;margin:0 auto 18px}
+#inp{width:100%;background:var(--vm);border:1px solid #3a6645;border-radius:10px;padding:12px;color:white;margin:10px 0}
+.sug{background:var(--vm);padding:10px;margin-bottom:5px;border-radius:8px;cursor:pointer}
+
+#ei{padding:60px 20px;text-align:center}
+#ei .ico{font-size:4rem;margin-bottom:20px}
+#ei h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;margin-bottom:10px}
+.eibtns{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.bei1, .bei2{padding:15px 25px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;cursor:pointer;border:none}
+.bei1{background:var(--vv);color:var(--vd)}
+.bei2{background:var(--vm);color:white}
+
+#loading{display:none;text-align:center;padding:50px}
+.spin{width:40px;height:40px;border:4px solid #2d5235;border-top-color:var(--vv);border-radius:50%;animation:giro .8s linear infinite;margin:0 auto 15px}
+@keyframes giro{to{transform:rotate(360deg)}}
+
+#banner{margin:15px;padding:15px;border-radius:12px;display:none;font-weight:bold}
+#banner.IDEAL{background:#1b4d24;border:1px solid var(--vv);color:#a8e6b0;display:block}
+#banner.ATENCAO{background:#4a360a;border:1px solid var(--am);color:#f5d87a;display:block}
+#banner.PROIBIDO{background:#4a0f0a;border:1px solid var(--vr);color:#f5a0a0;display:block}
+
+#agora{margin:0 15px;background:var(--vm);border-radius:15px;padding:20px;display:none;border:1px solid #2d5235}
+.atop{display:flex;justify-content:space-between;align-items:center}
+.atemp{font-size:3.5rem;font-family:'Bebas Neue',sans-serif}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px}
+.mc{background:#0f2417;padding:10px;border-radius:10px;text-align:center;font-size:0.8rem}
+.sect{font-family:'Bebas Neue',sans-serif;margin:20px 15px 10px;color:var(--vv);font-size:1.2rem}
+#horas{display:flex;gap:10px;overflow-x:auto;padding:0 15px 15px}
+.ch{min-width:80px;background:var(--vm);padding:10px;border-radius:12px;text-align:center;border:1px solid #2d5235}
+#dias{padding:0 15px 30px}
+.cd{display:grid;grid-template-columns:1fr 1fr 2fr auto;background:var(--vm);margin-bottom:8px;padding:12px;border-radius:12px;align-items:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><h1>Pulveri<span>Met</span></h1><p>Precisão no Campo</p></div>
+  <div class="hbtns">
+    <button class="bgps" onclick="usarGPS()">GPS</button>
+    <button class="bsel" onclick="abrirModal()">Busca</button>
+  </div>
+</header>
+
+<div id="ei">
+  <div class="ico">🌱</div>
+  <h2>Pronto para Pulverizar?</h2>
+  <p>Analise o clima em tempo real com critérios técnicos.</p>
+  <div class="eibtns">
+    <button class="bei1" onclick="usarGPS()">📍 Usar GPS</button>
+    <button class="bei2" onclick="abrirModal()">🔍 Buscar Cidade</button>
+  </div>
+</div>
+
+<div id="loading"><div class="spin"></div><p>Consultando satélites...</p></div>
+
+<div id="banner"></div>
+<div id="agora"></div>
+
+<div id="conteudo" style="display:none">
+  <div class="sect">Próximas Horas</div>
+  <div id="horas"></div>
+  <div class="sect">Próximos Dias</div>
+  <div id="dias"></div>
+</div>
+
+<div id="modal">
+  <div class="mbox">
+    <div class="mhandle"></div>
+    <h3>Buscar Localidade</h3>
+    <input type="text" id="inp" placeholder="Digite o nome da cidade..." oninput="buscarCidade()">
+    <div id="sugs"></div>
+    <button onclick="fecharModal()" style="width:100%; padding:10px; background:none; border:1px solid #3a6645; color:white; border-radius:10px; margin-top:10px">Fechar</button>
+  </div>
+</div>
+
+<script>
+let LAT, LON, NOME;
+
+function g(id){ return document.getElementById(id); }
+
+function abrirModal(){ g('modal').classList.add('on'); }
+function fecharModal(){ g('modal').classList.remove('on'); }
+
+function usarGPS() {
+    g('ei').style.display = 'none';
+    g('loading').style.display = 'block';
+    
+    if (!navigator.geolocation) {
+        alert("GPS não suportado pelo seu navegador.");
+        resetApp();
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            LAT = pos.coords.latitude;
+            LON = pos.coords.longitude;
+            NOME = "Sua Localização";
+            carregarDados();
+        },
+        (err) => {
+            alert("Erro ao acessar GPS. Tente buscar a cidade manualmente.");
+            resetApp();
+        }
+    );
+}
+
+function buscarCidade() {
+    let q = g('inp').value;
+    if(q.length < 3) return;
+    
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=5&language=pt`)
+    .then(r => r.json())
+    .then(d => {
+        let html = '';
+        if(d.results) {
+            d.results.forEach(loc => {
+                html += `<div class="sug" onclick="selecionar('${loc.latitude}','${loc.longitude}','${loc.name}')">${loc.name}, ${loc.admin1 || ''} (${loc.country})</div>`;
+            });
+        }
+        g('sugs').innerHTML = html;
+    });
+}
+
+function selecionar(lat, lon, nome) {
+    LAT = lat; LON = lon; NOME = nome;
+    fecharModal();
+    g('ei').style.display = 'none';
+    g('loading').style.display = 'block';
+    carregarDados();
+}
+
+function carregarDados() {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,precipitation,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,precipitation_sum&current_weather=true&timezone=auto`;
+
+    fetch(url)
+    .then(r => r.json())
+    .then(d => {
+        g('loading').style.display = 'none';
+        renderizar(d);
+    })
+    .catch(e => {
+        alert("Erro ao carregar dados do clima.");
+        resetApp();
+    });
+}
+
+function avaliar(t, u, v, p) {
+    if (t > 35 || u < 40 || v > 20 || p > 0) return 'PROIBIDO';
+    if (t > 30 || t < 10 || u < 55 || v > 10 || v < 2) return 'ATENCAO';
+    return 'IDEAL';
+}
+
+function renderizar(d) {
+    const cur = d.current_weather;
+    const h = d.hourly;
+    const day = d.daily;
+    
+    // Banner e Agora
+    const status = avaliar(cur.temperature, h.relativehumidity_2m[0], cur.windspeed, h.precipitation[0]);
+    const b = g('banner');
+    b.className = status;
+    b.innerHTML = status === 'IDEAL' ? '✅ Condições Ideais' : status === 'ATENCAO' ? '⚠️ Atenção às restrições' : '🚫 Pulverização Proibida';
+    
+    g('agora').style.display = 'block';
+    g('agora').innerHTML = `
+        <div class="atop">
+            <div><p style="font-size:0.7rem; color:var(--ts)">${NOME}</p><div class="atemp">${Math.round(cur.temperature)}°C</div></div>
+            <div style="font-size:2rem">☁️</div>
+        </div>
+        <div class="g3">
+            <div class="mc">💧 ${h.relativehumidity_2m[0]}%</div>
+            <div class="mc">💨 ${Math.round(cur.windspeed)}km/h</div>
+            <div class="mc">☔ ${h.precipitation[0]}mm</div>
+        </div>
+    `;
+
+    // Horas
+    let hHtml = '';
+    for(let i=0; i<24; i++) {
+        let st = avaliar(h.temperature_2m[i], h.relativehumidity_2m[i], h.windspeed_10m[i], h.precipitation[i]);
+        hHtml += `<div class="ch" style="border-bottom: 3px solid ${st === 'IDEAL'?'#4caf50':st==='ATENCAO'?'#f5c518':'#c0392b'}">
+            <div style="font-size:0.7rem">${i}h</div>
+            <div style="font-weight:bold">${Math.round(h.temperature_2m[i])}°</div>
+            <div style="font-size:0.5rem">${st}</div>
+        </div>`;
+    }
+    g('horas').innerHTML = hHtml;
+
+    // Dias
+    let dHtml = '';
+    for(let i=0; i<7; i++) {
+        let st = avaliar(day.temperature_2m_max[i], 60, day.windspeed_10m_max[i], day.precipitation_sum[i]);
+        dHtml += `<div class="cd">
+            <div style="font-size:0.8rem; font-weight:bold">${i===0?'Hoje':i===1?'Amanhã':'Dia '+i}</div>
+            <div>🌤️</div>
+            <div style="font-size:0.7rem">🌡️${Math.round(day.temperature_2m_min[i])}/${Math.round(day.temperature_2m_max[i])}°C</div>
+            <div style="font-size:0.6rem; color:var(--vv)">${st}</div>
+        </div>`;
+    }
+    g('dias').innerHTML = dHtml;
+    g('conteudo').style.display = 'block';
+}
+
+function resetApp() {
+    g('ei').style.display = 'block';
+    g('loading').style.display = 'none';
+    g('conteudo').style.display = 'none';
+    g('agora').style.display = 'none';
+    g('banner').style.display = 'none';
+}
+</script>
+</body>
+</html>
